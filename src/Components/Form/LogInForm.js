@@ -1,43 +1,42 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const SignupForm = () => {
+const LogInForm = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const signUpHandler = (e) => {
+  const loginHandler = (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert("Password and Confirm Password must be same");
-      return;
-    }
-
     fetch(
-      "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCsdHmEyton0hpjeL78i6sCtLW-udHBNGk",
+      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCsdHmEyton0hpjeL78i6sCtLW-udHBNGk",
       {
         method: "POST",
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          confirmPassword: confirmPassword,
-          returnSecureToken: true,
-        }),
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          returnSecureToken: true,
+        }),
       }
     )
       .then((res) => {
         if (res.ok) {
-          console.log("User has successfully signed up");
-          return;
+          return res.json();
         } else {
           return res.json().then((data) => {
             alert(data.error.message);
-            throw new Error("Authentication Failed");
+            throw new Error("Authentication failed");
           });
         }
+      })
+      .then((data) => {
+        localStorage.setItem("token", data.idToken);
+        console.log(data.idToken);
+        navigate("/welcome");
       })
       .catch((err) => {
         console.log(err);
@@ -45,23 +44,22 @@ const SignupForm = () => {
 
     setEmail("");
     setPassword("");
-    setConfirmPassword("");
   };
 
   return (
     <>
       <form
-        onSubmit={signUpHandler}
+        onSubmit={loginHandler}
         className="d-flex flex-column w-25 mx-auto p-5"
       >
-        <h3 className="d-flex justify-content-center">SignUp</h3>
+        <h3 className="d-flex justify-content-center">Login</h3>
         <div className="mb-3">
           <label htmlFor="formGroupExampleInput" className="form-label">
             Email
           </label>
           <input
             type="email"
-            className="form-control"
+            className="form-control bg-dark text-white"
             id="formGroupExampleInput"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
@@ -74,39 +72,33 @@ const SignupForm = () => {
           </label>
           <input
             type="password"
-            className="form-control"
+            className="form-control bg-dark text-white"
             id="formGroupExampleInput2"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             required
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="formGroupExampleInput2" className="form-label">
-            Confirm Passowrd
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="formGroupExampleInput3"
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            value={confirmPassword}
-            required
-          />
-        </div>
         <button type="submit" className="btn btn-primary">
-          Sign Up
+          Login
         </button>
+        <a
+          className="d-flex justify-content-center mt-2"
+          aria-current="page"
+          href="/signup"
+        >
+          Forgot Password
+        </a>
       </form>
       <a
         className="d-flex justify-content-center nav-link"
         aria-current="page"
-        href="/login"
+        href="/signup"
       >
-        Have an account? LogIn
+        Don't have an account? Sign up
       </a>
     </>
   );
 };
 
-export default SignupForm;
+export default LogInForm;
