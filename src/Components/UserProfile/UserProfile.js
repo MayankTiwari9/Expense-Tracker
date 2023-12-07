@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import firebaseApp from "../../firebase";
 
@@ -9,10 +9,49 @@ const UserProfile = () => {
 
   const token = localStorage.getItem("token");
   const storage = getStorage(firebaseApp);
+  console.log(token);
 
   function handleChange(e) {
     if (e.target.files[0]) setFile(e.target.files[0]);
   }
+
+
+const getUserHandler = useCallback(async () => {
+  try {
+    const response = await fetch(
+      "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCsdHmEyton0hpjeL78i6sCtLW-udHBNGk",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idToken: token,
+        }),
+      }
+    );
+
+    const data = await response.json();
+    console.log(data); 
+    setNewName(data.displayName);
+    setURL(data.photoUrl);
+
+  } catch (error) {
+    console.error(error);
+  }
+}, [token]);
+
+
+useEffect(() => {
+  getUserHandler();
+}, [getUserHandler]);
+
+
+
+  
+  useEffect(() => {
+    getUserHandler();
+  },[getUserHandler])
 
   const updateUserHandler = async (e) => {
     e.preventDefault();
@@ -25,11 +64,9 @@ const UserProfile = () => {
         const imageUrl = await getDownloadURL(storageRef);
         console.log("Image uploaded:", imageUrl);
 
-        // Set the URL to be used when updating the user profile
         setURL(imageUrl);
       }
 
-      // Update user information including the image URL
       const response = await fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCsdHmEyton0hpjeL78i6sCtLW-udHBNGk",
         {
@@ -44,11 +81,13 @@ const UserProfile = () => {
             returnSecureToken: true,
           }),
         }
-      ).then((res) => {
-        console.log(res);
-      })
+      ).then(response => response.json())
+      .then(data => console.log(data[["PromiseResult"]]))
+      .catch(error => console.error(error));
 
+      
       if (!response.ok) {
+        console.log(response.json());
         throw new Error("Update failed");
       }
 
@@ -56,6 +95,9 @@ const UserProfile = () => {
     } catch (err) {
       console.error(err);
     }
+
+    setNewName("");
+    setURL("");
   };
 
   return (
@@ -67,7 +109,7 @@ const UserProfile = () => {
       <div className="d-flex">
         <div className="d-flex m-3">
           <label className="mr-2">Full Name:</label>
-          <input className="h-75" type="text" onChange={(e) => setNewName(e.target.value)} />
+          <input className="h-75" value={newName} type="text" onChange={(e) => setNewName(e.target.value)} />
         </div>
         <div className="d-flex m-3">
           <label className="mr-2">Profile Photo:</label>
