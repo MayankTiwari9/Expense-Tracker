@@ -3,6 +3,10 @@ import React from "react";
 const Header = () => {
   const token = localStorage.getItem("token");
 
+  const logoutHandler = () => {
+    localStorage.removeItem("token");
+  }
+
   const verifyEmailHandler = async () => {
     const response = await fetch(
       "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyCsdHmEyton0hpjeL78i6sCtLW-udHBNGk",
@@ -66,6 +70,7 @@ const Header = () => {
       <button onClick={verifyEmailHandler} className="btn btn-primary">
         Verify email ID
       </button>
+      <button onClick={logoutHandler} className="btn btn-danger">Logout</button>
     </nav>
   );
 };
