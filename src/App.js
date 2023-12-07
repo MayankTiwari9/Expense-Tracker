@@ -5,6 +5,7 @@ import Header from "./Components/Header/Header";
 import LogInForm from "./Components/Form/LogInForm";
 import Welcome from "./Components/Welcome/Welcome";
 import UserProfile from "./Components/UserProfile/UserProfile";
+import ForgotPassword from "./Components/Form/ForgotPassword";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/login" element={<LogInForm />} />
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/updateprofile" element={<UserProfile/>}/>
+        <Route path="/forgotpassword" element={<ForgotPassword/>}/>
       </Routes>
     </BrowserRouter>
   );

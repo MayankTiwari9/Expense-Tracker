@@ -85,7 +85,7 @@ const LogInForm = () => {
         <a
           className="d-flex justify-content-center mt-2"
           aria-current="page"
-          href="/signup"
+          href="/forgotpassword"
         >
           Forgot Password
         </a>

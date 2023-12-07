@@ -1,13 +1,22 @@
 import React from "react";
+import {useNavigate} from "react-router-dom"
 
 const Header = () => {
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const logoutHandler = () => {
     localStorage.removeItem("token");
+    navigate("/login");
+
   }
 
   const verifyEmailHandler = async () => {
+    if(!token){
+      alert("You are not logged In");
+      return;
+    }
+
     const response = await fetch(
       "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyCsdHmEyton0hpjeL78i6sCtLW-udHBNGk",
       {
@@ -67,10 +76,10 @@ const Header = () => {
           </ul>
         </div>
       </div>
-      <button onClick={verifyEmailHandler} className="btn btn-primary">
+      <button onClick={verifyEmailHandler} className="btn btn-primary m-3" style={{width: "12%"}}>
         Verify email ID
       </button>
-      <button onClick={logoutHandler} className="btn btn-danger">Logout</button>
+      <button onClick={logoutHandler} className="btn btn-danger m-2">Logout</button>
     </nav>
   );
 };
