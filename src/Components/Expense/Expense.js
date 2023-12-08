@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 const Expense = () => {
   const [amount, setAmount] = useState();
@@ -15,12 +16,42 @@ const Expense = () => {
       category: category,
     };
 
+    axios
+      .post(
+        "https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses.json",
+        {
+          amount: amount,
+          description: description,
+          category: category,
+        }
+      )
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+
     setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
 
     setAmount("");
     setDescription("");
     setCategory("");
   };
+
+  const getAllExpense = () => {
+    axios
+      .get(
+        "https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses.json"
+      )
+      .then((res) => {
+        if (res.data) {
+          const expenseArray = Object.values(res.data);
+          setExpenses(expenseArray);
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    getAllExpense();
+  }, []);
 
   return (
     <>
@@ -77,7 +108,10 @@ const Expense = () => {
         {expenses &&
           expenses.map((item, index) => {
             return (
-              <div className="d-flex justify-content-around align-items-center w-100" key={index}>
+              <div
+                className="d-flex justify-content-around align-items-center w-100"
+                key={index}
+              >
                 <h3 className="align-middle">{item.amount}</h3>
                 <p className="">{item.description}</p>
                 <p className="">{item.category}</p>
