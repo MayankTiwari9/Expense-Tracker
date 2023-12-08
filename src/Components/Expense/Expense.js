@@ -6,6 +6,7 @@ const Expense = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [expenses, setExpenses] = useState([]);
+  const [editExpenseId, setEditExpenseId] = useState(null);
 
   const addExpenseHandler = (e) => {
     e.preventDefault();
@@ -16,19 +17,27 @@ const Expense = () => {
       category: category,
     };
 
-    axios
-      .post(
-        "https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses.json",
-        {
-          amount: amount,
-          description: description,
-          category: category,
-        }
-      )
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
+    if (editExpenseId !== null) {
+      axios
+        .put(
+          `https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses/${editExpenseId}.json`,
+          newExpense
+        )
+        .then((res) => console.log(res.data))
+        .catch((err) => console.log(err));
 
-    setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+      setEditExpenseId(null);
+    } else {
+      axios
+        .post(
+          "https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses.json",
+          newExpense
+        )
+        .then((res) => console.log(res.data))
+        .catch((err) => console.log(err));
+
+        getAllExpense();
+    }
 
     setAmount("");
     setDescription("");
@@ -42,11 +51,29 @@ const Expense = () => {
       )
       .then((res) => {
         if (res.data) {
-          const expenseArray = Object.values(res.data);
+          const expenseArray = res.data;
           setExpenses(expenseArray);
         }
       })
       .catch((err) => console.log(err));
+  };
+
+  const deleteExpense = (id) => {
+    axios
+      .delete(
+        `https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses/${id}.json`
+      )
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  };
+
+  const handleEditClick = (id) => {
+    setEditExpenseId(id);
+
+    const expenseToEdit = expenses[id];
+    setAmount(expenseToEdit.amount);
+    setDescription(expenseToEdit.description);
+    setCategory(expenseToEdit.category);
   };
 
   useEffect(() => {
@@ -105,19 +132,20 @@ const Expense = () => {
         className="d-flex flex-column w-50 mx-auto align-items-center justify-content-center mt-3 rounded text-white"
         style={{ backgroundColor: "rgb(3,21,37)" }}
       >
-        {expenses &&
-          expenses.map((item, index) => {
-            return (
-              <div
-                className="d-flex justify-content-around align-items-center w-100"
-                key={index}
-              >
-                <h3 className="align-middle">{item.amount}</h3>
-                <p className="">{item.description}</p>
-                <p className="">{item.category}</p>
-              </div>
-            );
-          })}
+        {Object.entries(expenses).map(([id, expense]) => (
+          <div
+            className="d-flex justify-content-around align-items-center w-100"
+            key={id}
+          >
+            <h3 className="align-middle">{expense.amount}</h3>
+            <p className="">{expense.description}</p>
+            <p className="">{expense.category}</p>
+            {editExpenseId !== id && (
+              <button onClick={() => handleEditClick(id)}>Edit Expense</button>
+            )}
+            <button onClick={() => deleteExpense(id)}>Delete</button>
+          </div>
+        ))}
       </div>
     </>
   );
