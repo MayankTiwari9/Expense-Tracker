@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { expenseActions } from "../../store/expenses";
 
@@ -9,6 +9,7 @@ const Expense = () => {
   const [category, setCategory] = useState("");
   const [expenses, setExpenses] = useState([]);
   const [editExpenseId, setEditExpenseId] = useState(null);
+  const [isPremiumActivated, setIsPremiumActivated] = useState(false);
   const dispatch = useDispatch();
 
   const addExpenseHandler = (e) => {
@@ -38,9 +39,14 @@ const Expense = () => {
           "https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses.json",
           newExpense
         )
-        .then((res) => {console.log(res.data)
-          const data = res.data;
-          dispatch(expenseActions.addExpense({ data }))})
+        .then((res) => {
+          console.log(res.data);
+          const addedExpense = {
+            id: res.data.name, // Assuming Firebase response provides a unique ID
+            ...newExpense,
+          };
+          dispatch(expenseActions.addExpense({ data: addedExpense }));
+        })
         .catch((err) => console.log(err));
 
       getAllExpense();
@@ -51,21 +57,29 @@ const Expense = () => {
     setCategory("");
   };
 
-  const getAllExpense = () => {
+  const getAllExpense = useCallback(() => {
     axios
       .get(
         "https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses.json"
       )
       .then((res) => {
         if (res.data) {
-          const expenseArray = res.data;
-          const data = res.data;
-          dispatch(expenseActions.setExpense({ data }));
+          let expenseArray = res.data;
+          if(!Array.isArray(expenseArray)){
+            expenseArray = Object.values(expenseArray);
+          }
+          dispatch(expenseActions.setExpense({ data: expenseArray }));
           setExpenses(expenseArray);
+
+          const totalExpenses = expenseArray.reduce(
+            (total, expense) => total + parseFloat(expense.amount),
+            0
+          )
+          setIsPremiumActivated(totalExpenses > 10000);
         }
       })
       .catch((err) => console.log(err));
-  };
+  }, [dispatch]);
 
   const deleteExpense = (id) => {
     axios
@@ -87,7 +101,27 @@ const Expense = () => {
 
   useEffect(() => {
     getAllExpense();
-  }, []);
+  }, [getAllExpense]);
+
+  const activatePremium = () => {
+    // Add your premium activation logic here
+    console.log("Premium activated!");
+  };
+
+  const downloadExpensesCSV = () => {
+    const csvContent = "data:text/csv;charset=utf-8," +
+      "Amount,Description,Category\n" +
+      expenses.map(expense =>
+        `${expense.amount},${expense.description},${expense.category}`
+      ).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "expenses.csv");
+    document.body.appendChild(link);
+    link.click();
+  };
 
   return (
     <>
@@ -167,6 +201,12 @@ const Expense = () => {
           </div>
         ))}
       </div>
+      {isPremiumActivated && (
+        <button className="d-flex btn btn-warning m-3 mx-auto" onClick={activatePremium}>Activate Premium</button>
+      )}
+      <button className="d-flex mx-auto btn btn-primary m-2" onClick={downloadExpensesCSV}>
+        Download Expenses CSV
+      </button>
     </>
   );
 };

@@ -1,7 +1,10 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import {useNavigate} from "react-router-dom";
-import {authActions} from "../../store/auth";
+import { useNavigate } from "react-router-dom";
+import { authActions } from "../../store/auth";
+import { themeAction } from "../../store/theme";
+import DarkMode from './DarkMode';
+import './DarkMode.css';
 
 const Header = () => {
   const token = localStorage.getItem("token");
@@ -12,11 +15,10 @@ const Header = () => {
     localStorage.removeItem("token");
     dispatch(authActions.logout());
     navigate("/login");
-
-  }
+  };
 
   const verifyEmailHandler = async () => {
-    if(!token){
+    if (!token) {
       alert("You are not logged In");
       return;
     }
@@ -43,8 +45,12 @@ const Header = () => {
     console.log(data);
   };
 
+  const toggleDarkTheme = () => {
+    dispatch(themeAction.toggleTheme());
+  };
+
   return (
-    <nav class="navbar navbar-expand-lg">
+    <nav className={`navbar navbar-expand-lg`}>
       <div class="container-fluid">
         <a class="navbar-brand" href="/">
           Expense Tracker
@@ -80,10 +86,17 @@ const Header = () => {
           </ul>
         </div>
       </div>
-      <button onClick={verifyEmailHandler} className="btn btn-primary m-3" style={{width: "12%"}}>
+      <button
+        onClick={verifyEmailHandler}
+        className="btn btn-primary m-3"
+        style={{ width: "12%" }}
+      >
         Verify email ID
       </button>
-      <button onClick={logoutHandler} className="btn btn-danger m-2">Logout</button>
+      <button onClick={logoutHandler} className="btn btn-danger m-2">
+        Logout
+      </button>
+      <DarkMode toggleDarkTheme={toggleDarkTheme}/>
     </nav>
   );
 };
