@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { expenseActions } from "../../store/expenses";
 
 const Expense = () => {
   const [amount, setAmount] = useState();
@@ -7,6 +9,7 @@ const Expense = () => {
   const [category, setCategory] = useState("");
   const [expenses, setExpenses] = useState([]);
   const [editExpenseId, setEditExpenseId] = useState(null);
+  const dispatch = useDispatch();
 
   const addExpenseHandler = (e) => {
     e.preventDefault();
@@ -23,7 +26,9 @@ const Expense = () => {
           `https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses/${editExpenseId}.json`,
           newExpense
         )
-        .then((res) => console.log(res.data))
+        .then((res) => {
+          console.log(res.data);
+        })
         .catch((err) => console.log(err));
 
       setEditExpenseId(null);
@@ -33,10 +38,12 @@ const Expense = () => {
           "https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses.json",
           newExpense
         )
-        .then((res) => console.log(res.data))
+        .then((res) => {console.log(res.data)
+          const data = res.data;
+          dispatch(expenseActions.addExpense({ data }))})
         .catch((err) => console.log(err));
 
-        getAllExpense();
+      getAllExpense();
     }
 
     setAmount("");
@@ -52,6 +59,8 @@ const Expense = () => {
       .then((res) => {
         if (res.data) {
           const expenseArray = res.data;
+          const data = res.data;
+          dispatch(expenseActions.setExpense({ data }));
           setExpenses(expenseArray);
         }
       })
@@ -134,16 +143,27 @@ const Expense = () => {
       >
         {Object.entries(expenses).map(([id, expense]) => (
           <div
-            className="d-flex justify-content-around align-items-center w-100"
+            className="d-flex justify-content-around align-items-center w-100 border-bottom"
             key={id}
+            style={{ height: "75px" }}
           >
             <h3 className="align-middle">{expense.amount}</h3>
             <p className="">{expense.description}</p>
             <p className="">{expense.category}</p>
             {editExpenseId !== id && (
-              <button onClick={() => handleEditClick(id)}>Edit Expense</button>
+              <button
+                className="btn btn-success"
+                onClick={() => handleEditClick(id)}
+              >
+                Edit Expense
+              </button>
             )}
-            <button onClick={() => deleteExpense(id)}>Delete</button>
+            <button
+              className="btn btn-danger"
+              onClick={() => deleteExpense(id)}
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>

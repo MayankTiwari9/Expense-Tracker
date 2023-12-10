@@ -1,12 +1,16 @@
 import React from "react";
-import {useNavigate} from "react-router-dom"
+import { useDispatch } from "react-redux";
+import {useNavigate} from "react-router-dom";
+import {authActions} from "../../store/auth";
 
 const Header = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const logoutHandler = () => {
     localStorage.removeItem("token");
+    dispatch(authActions.logout());
     navigate("/login");
 
   }

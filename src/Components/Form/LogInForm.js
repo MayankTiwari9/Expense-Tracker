@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import {authActions} from '../../store/auth';
 
 const LogInForm = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
   const loginHandler = (e) => {
     e.preventDefault();
@@ -35,7 +38,8 @@ const LogInForm = () => {
       })
       .then((data) => {
         localStorage.setItem("token", data.idToken);
-        console.log(data.idToken);
+        console.log(data);
+        dispatch(authActions.login({bearerToken: data.idToken, userId: data.localId}))
         navigate("/welcome");
       })
       .catch((err) => {
