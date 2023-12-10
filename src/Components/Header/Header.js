@@ -1,15 +1,16 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { authActions } from "../../store/auth";
 import { themeAction } from "../../store/theme";
-import DarkMode from './DarkMode';
-import './DarkMode.css';
 
 const Header = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const darkTheme = useSelector((state) => state.theme.darkTheme);
+
+  console.log(darkTheme);
 
   const logoutHandler = () => {
     localStorage.removeItem("token");
@@ -45,7 +46,8 @@ const Header = () => {
     console.log(data);
   };
 
-  const toggleDarkTheme = () => {
+  const toggleDarkTheme = (e) => {
+    e.preventDefault();
     dispatch(themeAction.toggleTheme());
   };
 
@@ -96,7 +98,15 @@ const Header = () => {
       <button onClick={logoutHandler} className="btn btn-danger m-2">
         Logout
       </button>
-      <DarkMode toggleDarkTheme={toggleDarkTheme}/>
+      <div onClick={toggleDarkTheme} className="dark_mode">
+        {darkTheme ? (
+          <button type="button" className="btn btn-light">
+            Light Theme
+          </button>
+        ) : (
+          <button className="btn btn-dark">Dark Theme</button>
+        )}
+      </div>
     </nav>
   );
 };
