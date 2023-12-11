@@ -3,12 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { authActions } from "../../store/auth";
 import { themeAction } from "../../store/theme";
+import { useAlert } from "react-alert";
 
 const Header = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const darkTheme = useSelector((state) => state.theme.darkTheme);
+  const alert = useAlert();
 
 
   const logoutHandler = () => {
@@ -19,7 +21,7 @@ const Header = () => {
 
   const verifyEmailHandler = async () => {
     if (!token) {
-      alert("You are not logged In");
+      alert.error("You are not logged In");
       return;
     }
 

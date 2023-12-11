@@ -2,15 +2,17 @@ import axios from "axios";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { expenseActions } from "../../store/expenses";
+import { useAlert } from "react-alert";
 
 const Expense = () => {
   const [amount, setAmount] = useState();
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [expenses, setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState({});
   const [editExpenseId, setEditExpenseId] = useState(null);
   const [isPremiumActivated, setIsPremiumActivated] = useState(false);
   const dispatch = useDispatch();
+  const alert = useAlert();
 
   const addExpenseHandler = (e) => {
     e.preventDefault();
@@ -28,7 +30,10 @@ const Expense = () => {
           newExpense
         )
         .then((res) => {
-          console.log(res.data);
+          setExpenses((prevExpenses) => {
+            const updatedExpenses = {...prevExpenses, [editExpenseId]: newExpense};
+            return updatedExpenses
+          })
         })
         .catch((err) => console.log(err));
 
@@ -40,11 +45,12 @@ const Expense = () => {
           newExpense
         )
         .then((res) => {
-          console.log(res.data);
           const addedExpense = {
-            id: res.data.name, // Assuming Firebase response provides a unique ID
+            id: res.data.name,
             ...newExpense,
-          };
+          }
+          setExpenses((prevExpenses) => ({ ...prevExpenses, [res.data.name]: addedExpense }));
+        
           dispatch(expenseActions.addExpense({ data: addedExpense }));
         })
         .catch((err) => console.log(err));
@@ -65,13 +71,12 @@ const Expense = () => {
       .then((res) => {
         if (res.data) {
           let expenseArray = res.data;
-          if(!Array.isArray(expenseArray)){
-            expenseArray = Object.values(expenseArray);
-          }
           dispatch(expenseActions.setExpense({ data: expenseArray }));
           setExpenses(expenseArray);
 
-          const totalExpenses = expenseArray.reduce(
+          const expenseAmount = Object.values(expenseArray);
+
+          const totalExpenses = expenseAmount.reduce(
             (total, expense) => total + parseFloat(expense.amount),
             0
           )
@@ -81,12 +86,19 @@ const Expense = () => {
       .catch((err) => console.log(err));
   }, [dispatch]);
 
+
   const deleteExpense = (id) => {
     axios
       .delete(
         `https://expense-tracker-react-1867a-default-rtdb.firebaseio.com/expenses/${id}.json`
       )
-      .then((res) => console.log(res))
+      .then((res) => {
+        setExpenses((prevExpenses) => {
+          const updatedExpenses = { ...prevExpenses };
+          delete updatedExpenses[id];
+          return updatedExpenses;
+        });
+      })
       .catch((err) => console.log(err));
   };
 
@@ -105,7 +117,7 @@ const Expense = () => {
 
   const activatePremium = () => {
     // Add your premium activation logic here
-    console.log("Premium activated!");
+    alert.success("Premium activated!");
   };
 
   const downloadExpensesCSV = () => {
@@ -176,6 +188,7 @@ const Expense = () => {
         style={{ backgroundColor: "rgb(3,21,37)" }}
       >
         {Object.entries(expenses).map(([id, expense]) => (
+          
           <div
             className="d-flex justify-content-around align-items-center w-100 border-bottom"
             key={id}

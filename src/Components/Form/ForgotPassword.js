@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { useAlert } from 'react-alert';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
+    const alert = useAlert();
 
     const resetPasswordHandler = async() => {
         const response = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyCsdHmEyton0hpjeL78i6sCtLW-udHBNGk",{
@@ -13,12 +15,11 @@ const ForgotPassword = () => {
                 requestType: "PASSWORD_RESET",
                 email: email
             })
+        }).then((res) => {
+          alert.success("Password reset link sent successfully");
+        }).catch((err) => {
+          alert.error(err.message);
         })
-
-        const data = response.json();
-        console.log(data);
-
-
     }
 
   return (
