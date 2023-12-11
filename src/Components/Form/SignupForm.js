@@ -52,8 +52,7 @@ const SignupForm = () => {
   };
 
   return (
-    
-    <div style={{height: "83vh"}}>
+    <div style={{ height: "83vh" }}>
       <form
         onSubmit={signUpHandler}
         className="d-flex flex-column w-25 mx-auto p-5"

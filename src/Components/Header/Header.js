@@ -12,7 +12,6 @@ const Header = () => {
   const darkTheme = useSelector((state) => state.theme.darkTheme);
   const alert = useAlert();
 
-
   const logoutHandler = () => {
     localStorage.removeItem("token");
     dispatch(authActions.logout());
@@ -53,8 +52,14 @@ const Header = () => {
   };
 
   return (
-    <nav className={darkTheme ? 'navbar navbar-expand-lg navbar-dark bg-dark' : 'navbar navbar-expand-lg navbar-light bg-lignt'}>
-      <div className="container-fluid" >
+    <nav
+      className={
+        darkTheme
+          ? "navbar navbar-expand-lg navbar-dark bg-dark"
+          : "navbar navbar-expand-lg navbar-light bg-lignt"
+      }
+    >
+      <div className="container-fluid">
         <a class="navbar-brand" href="/">
           Expense Tracker
         </a>

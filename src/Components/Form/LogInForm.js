@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {authActions} from '../../store/auth';
+import { authActions } from "../../store/auth";
 import { useAlert } from "react-alert";
 
 const LogInForm = () => {
@@ -41,7 +41,9 @@ const LogInForm = () => {
       })
       .then((data) => {
         localStorage.setItem("token", data.idToken);
-        dispatch(authActions.login({bearerToken: data.idToken, userId: data.localId}))
+        dispatch(
+          authActions.login({ bearerToken: data.idToken, userId: data.localId })
+        );
         navigate("/welcome");
       })
       .catch((err) => {
@@ -53,7 +55,7 @@ const LogInForm = () => {
   };
 
   return (
-    <div style={{height: "83vh"}}>
+    <div style={{ height: "83vh" }}>
       <form
         onSubmit={loginHandler}
         className="d-flex flex-column w-25 mx-auto p-5"

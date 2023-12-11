@@ -16,7 +16,6 @@ const Expense = () => {
 
   const addExpenseHandler = (e) => {
     e.preventDefault();
-
     const newExpense = {
       amount: amount,
       description: description,
@@ -31,12 +30,15 @@ const Expense = () => {
         )
         .then((res) => {
           setExpenses((prevExpenses) => {
-            const updatedExpenses = {...prevExpenses, [editExpenseId]: newExpense};
-            return updatedExpenses
-          })
+            const updatedExpenses = {
+              ...prevExpenses,
+              [editExpenseId]: newExpense,
+            };
+            alert.success("Expense Updated");
+            return updatedExpenses;
+          });
         })
         .catch((err) => console.log(err));
-
       setEditExpenseId(null);
     } else {
       axios
@@ -48,16 +50,17 @@ const Expense = () => {
           const addedExpense = {
             id: res.data.name,
             ...newExpense,
-          }
-          setExpenses((prevExpenses) => ({ ...prevExpenses, [res.data.name]: addedExpense }));
-        
+          };
+          setExpenses((prevExpenses) => ({
+            ...prevExpenses,
+            [res.data.name]: addedExpense,
+          }));
+          alert.success("Expense Added");
           dispatch(expenseActions.addExpense({ data: addedExpense }));
         })
         .catch((err) => console.log(err));
-
       getAllExpense();
     }
-
     setAmount("");
     setDescription("");
     setCategory("");
@@ -73,19 +76,16 @@ const Expense = () => {
           let expenseArray = res.data;
           dispatch(expenseActions.setExpense({ data: expenseArray }));
           setExpenses(expenseArray);
-
           const expenseAmount = Object.values(expenseArray);
-
           const totalExpenses = expenseAmount.reduce(
             (total, expense) => total + parseFloat(expense.amount),
             0
-          )
+          );
           setIsPremiumActivated(totalExpenses > 10000);
         }
       })
       .catch((err) => console.log(err));
   }, [dispatch]);
-
 
   const deleteExpense = (id) => {
     axios
@@ -98,6 +98,7 @@ const Expense = () => {
           delete updatedExpenses[id];
           return updatedExpenses;
         });
+        alert.success("Expense Deleted");
       })
       .catch((err) => console.log(err));
   };
@@ -116,23 +117,33 @@ const Expense = () => {
   }, [getAllExpense]);
 
   const activatePremium = () => {
-    // Add your premium activation logic here
     alert.success("Premium activated!");
   };
 
   const downloadExpensesCSV = () => {
-    const csvContent = "data:text/csv;charset=utf-8," +
+    if (Object.keys(expenses).length === 0) {
+      alert.error("No expenses to download");
+      return;
+    }
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
       "Amount,Description,Category\n" +
-      expenses.map(expense =>
-        `${expense.amount},${expense.description},${expense.category}`
-      ).join("\n");
+      Object.values(expenses)
+        .map(
+          (expense) =>
+            `${expense.amount},${expense.description},${expense.category}`
+        )
+        .join("\n");
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     link.setAttribute("download", "expenses.csv");
+
     document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -188,7 +199,6 @@ const Expense = () => {
         style={{ backgroundColor: "rgb(3,21,37)" }}
       >
         {Object.entries(expenses).map(([id, expense]) => (
-          
           <div
             className="d-flex justify-content-around align-items-center w-100 border-bottom"
             key={id}
@@ -215,9 +225,17 @@ const Expense = () => {
         ))}
       </div>
       {isPremiumActivated && (
-        <button className="d-flex btn btn-warning m-3 mx-auto" onClick={activatePremium}>Activate Premium</button>
+        <button
+          className="d-flex btn btn-warning m-3 mx-auto"
+          onClick={activatePremium}
+        >
+          Activate Premium
+        </button>
       )}
-      <button className="d-flex mx-auto btn btn-primary" onClick={downloadExpensesCSV}>
+      <button
+        className="d-flex mx-auto btn btn-primary mt-4"
+        onClick={downloadExpensesCSV}
+      >
         Download Expenses CSV
       </button>
     </>

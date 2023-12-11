@@ -4,19 +4,15 @@ import { ReactComponent as Moon } from "./Moon.svg";
 import "./DarkMode.css";
 
 const DarkMode = (props) => {
-    return (
-        <div onClick={props.toggleDarkTheme} className='dark_mode'>
-            <input
-                className='dark_mode_input'
-                type='checkbox'
-                id='darkmode-toggle'
-            />
-            <label className='dark_mode_label' for='darkmode-toggle'>
-                <Sun />
-                <Moon />
-            </label>
-        </div>
-    );
+  return (
+    <div onClick={props.toggleDarkTheme} className="dark_mode">
+      <input className="dark_mode_input" type="checkbox" id="darkmode-toggle" />
+      <label className="dark_mode_label" for="darkmode-toggle">
+        <Sun />
+        <Moon />
+      </label>
+    </div>
+  );
 };
 
 export default DarkMode;

@@ -19,7 +19,11 @@ function App() {
       <BrowserRouter>
         <Header />
         <Routes>
-          {token ? <Route path="/" element={<Expense />} /> : <Route path="/" element={<NotAuthenticatedPage/>}/>}
+          {token ? (
+            <Route path="/" element={<Expense />} />
+          ) : (
+            <Route path="/" element={<NotAuthenticatedPage />} />
+          )}
           <Route path="/signup" element={<SignupForm />} />
           <Route path="/login" element={<LogInForm />} />
           <Route path="/welcome" element={<Welcome />} />
