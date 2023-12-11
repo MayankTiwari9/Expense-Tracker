@@ -51,7 +51,7 @@ const LogInForm = () => {
   };
 
   return (
-    <>
+    <div style={{height: "83vh"}}>
       <form
         onSubmit={loginHandler}
         className="d-flex flex-column w-25 mx-auto p-5"
@@ -101,7 +101,7 @@ const LogInForm = () => {
       >
         Don't have an account? Sign up
       </a>
-    </>
+    </div>
   );
 };
 

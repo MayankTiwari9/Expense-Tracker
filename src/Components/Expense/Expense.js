@@ -204,7 +204,7 @@ const Expense = () => {
       {isPremiumActivated && (
         <button className="d-flex btn btn-warning m-3 mx-auto" onClick={activatePremium}>Activate Premium</button>
       )}
-      <button className="d-flex mx-auto btn btn-primary m-2" onClick={downloadExpensesCSV}>
+      <button className="d-flex mx-auto btn btn-primary" onClick={downloadExpensesCSV}>
         Download Expenses CSV
       </button>
     </>

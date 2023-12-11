@@ -10,7 +10,6 @@ const Header = () => {
   const dispatch = useDispatch();
   const darkTheme = useSelector((state) => state.theme.darkTheme);
 
-  console.log(darkTheme);
 
   const logoutHandler = () => {
     localStorage.removeItem("token");
@@ -52,8 +51,8 @@ const Header = () => {
   };
 
   return (
-    <nav className={`navbar navbar-expand-lg`}>
-      <div class="container-fluid">
+    <nav className={darkTheme ? 'navbar navbar-expand-lg navbar-dark bg-dark' : 'navbar navbar-expand-lg navbar-light bg-lignt'}>
+      <div className="container-fluid" >
         <a class="navbar-brand" href="/">
           Expense Tracker
         </a>
@@ -66,7 +65,7 @@ const Header = () => {
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          <span class="navbar-toggler-icon"></span>
+          <span className="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
@@ -85,6 +84,11 @@ const Header = () => {
                 About Us
               </a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/login">
+                LogIn
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -100,11 +104,11 @@ const Header = () => {
       </button>
       <div onClick={toggleDarkTheme} className="dark_mode">
         {darkTheme ? (
-          <button type="button" className="btn btn-light">
+          <button type="button" className="btn btn-light m-1">
             Light Theme
           </button>
         ) : (
-          <button className="btn btn-dark">Dark Theme</button>
+          <button className="btn btn-dark m-1">Dark Theme</button>
         )}
       </div>
     </nav>

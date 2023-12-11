@@ -32,7 +32,6 @@ const getUserHandler = useCallback(async () => {
     );
 
     const data = await response.json();
-    console.log(data); 
     setNewName(data.displayName);
     setURL(data.photoUrl);
 
