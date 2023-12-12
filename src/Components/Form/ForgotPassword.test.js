@@ -4,7 +4,7 @@ import ForgotPassword from './ForgotPassword';
 
 
 
-test('renders Forgot Passworde as a text', () => {
+test('renders Forgot Password as a text', () => {
   render(<ForgotPassword />);
   const forgot = screen.getByText('Forgot Password');
   expect(forgot).toBeInTheDocument();
