@@ -44,7 +44,7 @@ const LogInForm = () => {
         dispatch(
           authActions.login({ bearerToken: data.idToken, userId: data.localId })
         );
-        navigate("/welcome");
+        navigate("/");
       })
       .catch((err) => {
         console.log(err);
